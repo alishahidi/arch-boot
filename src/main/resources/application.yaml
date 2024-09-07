@@ -1,0 +1,58 @@
+jwt:
+  token: ${JWT_TOKEN:256-bit-token}
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+spring:
+  datasource:
+    username: ${DB_USER:user}
+    url: jdbc:postgresql://${DB_HOST:host}:${DB_PORT:5432}/${DB_SCHEMA:schema}
+    password: ${DB_PASS:pass}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 20000
+      leak-detection-threshold: 2000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: 'false'
+
+  application:
+    name: api
+
+  task:
+    execution:
+      pool:
+        core-size: 10
+        max-size: 50
+        queue-capacity: 100
+    scheduling:
+      pool:
+        size: 10
+
+server:
+  error:
+    include-message: always
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: text/html, text/xml, text/plain, text/css, application/json, application/javascript
+
+s3:
+  liara:
+    endpoint: https://example.com
+    access: access
+    secret: secret
+
+#    this config for custom executor service made in core
+config:
+  executor:
+    size: 10
