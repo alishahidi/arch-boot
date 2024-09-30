@@ -4,6 +4,9 @@ import com.alishahidi.api.core.exception.ExceptionTemplate;
 import com.alishahidi.api.core.exception.ExceptionUtil;
 import lombok.experimental.UtilityClass;
 import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeType;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -40,9 +43,20 @@ public class IOUtils {
             Tika tika = new Tika();
             String type = tika.detect(filePath);
 
+            MimeTypes mimeTypes = MimeTypes.getDefaultMimeTypes();
+            MimeType mimeType;
+            String extension;
+            try {
+                mimeType = mimeTypes.forName(type);
+                extension = mimeType.getExtension();
+            } catch (MimeTypeException e) {
+                extension = "unknown";
+            }
+
             return FileDetails.builder()
                     .size(size)
-                    .type(type)
+                    .type(FileType.fromMimeType(type))
+                    .extension(extension)
                     .build();
         } catch (IOException e) {
             throw ExceptionUtil.make(ExceptionTemplate.FILE_PROCESS);

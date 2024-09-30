@@ -4,6 +4,7 @@ import com.alishahidi.api.core.context.SpringContext;
 import com.alishahidi.api.core.exception.ExceptionTemplate;
 import com.alishahidi.api.core.exception.ExceptionUtil;
 import com.alishahidi.api.core.util.FileDetails;
+import com.alishahidi.api.core.util.FileType;
 import com.alishahidi.api.core.util.IOUtils;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,26 +57,22 @@ public class ImageProcessor {
     public Path process(Path inputPath) {
         validateInput(inputPath);
 
-        // Get file details
         FileDetails fileDetails = IOUtils.fileDetails(inputPath);
 
-        // Check the file type and process accordingly
-        if (fileDetails.getType().startsWith("image/")) {
-            return processImage(inputPath, fileDetails.getType());
+        if (fileDetails.getType().equals(FileType.IMAGE)) {
+            return processImage(inputPath, fileDetails.getExtension());
         } else {
             throw ExceptionUtil.make(ExceptionTemplate.IMAGE_TYPE_ERROR);
         }
     }
 
-    private Path processImage(Path inputPath, String imageType) {
+    private Path processImage(Path inputPath, String extension) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            // Build the Thumbnailator processor
             Thumbnails.Builder<File> fileBuilder = Thumbnails.of(inputPath.toFile());
             applyTransformations(fileBuilder);
             fileBuilder.toOutputStream(outputStream);
 
-            // Create and return a temporary file containing the processed image
-            return createTempFile(outputStream, imageType);
+            return createTempFile(outputStream, extension);
         } catch (Exception e) {
             throw ExceptionUtil.make(ExceptionTemplate.FILE_PROCESS);
         }
@@ -99,17 +96,8 @@ public class ImageProcessor {
         }
     }
 
-    private Path createTempFile(ByteArrayOutputStream outputStream, String imageType) {
-        // Determine file extension based on image type
+    private Path createTempFile(ByteArrayOutputStream outputStream, String extension) {
         try {
-            String extension = switch (imageType) {
-                case "image/png" -> ".png";
-                case "image/jpeg" -> ".jpeg";
-                case "image/gif" -> ".gif";
-                // Add more cases if needed
-                default -> ".jpeg"; // Fallback to JPEG
-            };
-
             Path tempFilePath = Files.createTempFile(UUID.randomUUID() + "-", extension);
             Files.write(tempFilePath, outputStream.toByteArray());
             return tempFilePath;

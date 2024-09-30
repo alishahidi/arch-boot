@@ -27,6 +27,7 @@ public class Document {
 
     Long size;
     String type;
+    String extension;
 
     @CreationTimestamp
     Date createdAt;

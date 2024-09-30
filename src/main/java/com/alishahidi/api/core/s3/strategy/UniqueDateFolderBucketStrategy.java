@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class UniqueDateFolderBucketStrategy implements BucketStrategy {
 
     public CompletableFuture<String> put(S3AsyncClient client, String bucketName, String key, Path path, String folderName) throws BucketPutException {
-        key = folderName + "/" + dateUniqueName(key);
+        key = folderName + "/" + dateUniqueName(key) + IOUtils.fileDetails(path).getExtension();
 
         PutObjectRequest putOb = PutObjectRequest.builder()
                 .bucket(bucketName)

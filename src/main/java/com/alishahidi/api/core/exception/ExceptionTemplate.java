@@ -13,7 +13,8 @@ public enum ExceptionTemplate {
 
     FILE_PROCESS("error.file.process", HttpStatus.BAD_REQUEST),
     IMAGE_TYPE_ERROR("error.image.type", HttpStatus.BAD_REQUEST),
-    PERSON_NOT_FOUND("error.person.not.found", HttpStatus.NOT_FOUND);
+    PERSON_NOT_FOUND("error.person.not.found", HttpStatus.NOT_FOUND),
+    FILE_MIME_TYPE("error.file.type", HttpStatus.BAD_REQUEST);
 
     String key;
     HttpStatus status;

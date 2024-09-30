@@ -15,6 +15,7 @@ public class DocumentDto {
     Long id;
 
     String type;
+    String extension;
     Long size;
     String path;
 

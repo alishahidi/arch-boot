@@ -12,6 +12,7 @@ import java.util.Date;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FileDetails {
-    String type;
+    FileType type;
+    String extension;
     Long size;
 }
