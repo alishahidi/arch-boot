@@ -11,7 +11,7 @@ import java.util.Properties;
 @NonNullApi
 public class PrefixedMessageSource extends ReloadableResourceBundleMessageSource {
 
-    List<String> ignoredPrefix = List.of("violations");  // Avoid adding prefix for validation messages
+    List<String> ignoredPrefix = List.of("violations", "core", "exception");  // Avoid adding prefix for validation messages
 
     @Override
     protected Properties loadProperties(Resource resource, String fileName) throws IOException {

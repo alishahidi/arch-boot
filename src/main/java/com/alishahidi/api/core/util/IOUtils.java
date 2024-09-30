@@ -1,6 +1,9 @@
 package com.alishahidi.api.core.util;
 
+import com.alishahidi.api.core.exception.ExceptionTemplate;
+import com.alishahidi.api.core.exception.ExceptionUtil;
 import lombok.experimental.UtilityClass;
+import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,6 +30,22 @@ public class IOUtils {
         try {
             Files.deleteIfExists(path);
         } catch (IOException ignored) {
+        }
+    }
+
+    public FileDetails fileDetails(Path filePath) {
+        try {
+            long size = Files.size(filePath);
+
+            Tika tika = new Tika();
+            String type = tika.detect(filePath);
+
+            return FileDetails.builder()
+                    .size(size)
+                    .type(type)
+                    .build();
+        } catch (IOException e) {
+            throw ExceptionUtil.make(ExceptionTemplate.FILE_PROCESS);
         }
     }
 }

@@ -1,12 +1,17 @@
 package com.alishahidi.api.test;
 
+import com.alishahidi.api.core.exception.ExceptionTemplate;
+import com.alishahidi.api.core.exception.ExceptionUtil;
 import com.alishahidi.api.core.i18n.I18nUtil;
+import com.alishahidi.api.core.image.ImageProcessor;
 import com.alishahidi.api.core.pdf.Pdf;
 import com.alishahidi.api.core.pdf.PdfSelection;
-import com.alishahidi.api.core.s3.config.S3LiaraConfig;
-import com.alishahidi.api.core.util.IOUtils;
+import com.alishahidi.api.core.response.Response;
 import com.alishahidi.api.core.s3.Bucket;
+import com.alishahidi.api.core.s3.config.S3LiaraConfig;
 import com.alishahidi.api.core.s3.strategy.StandardBucketStrategy;
+import com.alishahidi.api.core.util.FileDetails;
+import com.alishahidi.api.core.util.IOUtils;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +33,19 @@ public class HelloController {
     S3LiaraConfig s3LiaraConfig;
 
     @GetMapping("/")
-    public String hello() {
-        return i18nUtil.getMessage("tag.hello", "Ali");
+    public Response<String> hello() {
+        return Response.success("Hii");
+    }
+
+    @GetMapping("/error")
+    public Response<String> error() {
+        Boolean a = true;
+
+        if (a) {
+            throw ExceptionUtil.make(ExceptionTemplate.PERSON_NOT_FOUND);
+        }
+
+        return Response.success("Hii");
     }
 
     @PostMapping("/validate")
@@ -41,7 +57,7 @@ public class HelloController {
     @PostMapping("/upload")
     public CompletableFuture<String> upload(@RequestParam("file") MultipartFile file) {
         Bucket bucket = Bucket.builder()
-                .name("bucket")
+                .name("contract")
                 .strategy(new StandardBucketStrategy())
                 .config(s3LiaraConfig)
                 .build();
@@ -54,7 +70,7 @@ public class HelloController {
     @PostMapping("/pdf/image/all")
     public CompletableFuture<String> pdfImagesAll(@RequestParam("file") MultipartFile pdf) throws IOException {
         Bucket bucket = Bucket.builder()
-                .name("bucket")
+                .name("contract")
                 .strategy(new StandardBucketStrategy())
                 .config(s3LiaraConfig)
                 .build();
@@ -69,4 +85,17 @@ public class HelloController {
         return CompletableFuture.completedFuture("sds");
     }
 
+    @PostMapping("/fileDetail")
+    public Response<FileDetails> fileDetail(@RequestParam("file") MultipartFile file) {
+        return Response.success(IOUtils.fileDetails(IOUtils.multipartFileToPath(file)));
+    }
+
+    @PostMapping("/compressImage")
+    public Response<String> compressImage(@RequestParam("file") MultipartFile file) {
+        FileDetails fileDetails = IOUtils.fileDetails(IOUtils.multipartFileToPath(file));
+        FileDetails newFileDetails = IOUtils.fileDetails(ImageProcessor.create()
+                .process(IOUtils.multipartFileToPath(file)));
+
+        return Response.success(fileDetails.getSize() + "   --   " + newFileDetails.getSize());
+    }
 }

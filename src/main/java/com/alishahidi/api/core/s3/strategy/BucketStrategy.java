@@ -8,5 +8,11 @@ import java.util.concurrent.CompletableFuture;
 
 public interface BucketStrategy {
 
-    CompletableFuture<String> put(S3AsyncClient client, String bucketName, String key, Path path) throws BucketPutException;
+    default CompletableFuture<String> put(S3AsyncClient client, String bucketName, String key, Path path) throws BucketPutException {
+        return null;
+    }
+
+    default CompletableFuture<String> put(S3AsyncClient client, String bucketName, String key, Path path, String folderName) throws BucketPutException {
+        return null;
+    }
 }

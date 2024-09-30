@@ -20,6 +20,10 @@ spring:
       connection-timeout: 20000
       leak-detection-threshold: 2000
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   jpa:
     hibernate:
       ddl-auto: update
@@ -56,3 +60,7 @@ s3:
 config:
   executor:
     size: 10
+
+image-processor:
+  ratio: 0.6
+  scale: 1.0

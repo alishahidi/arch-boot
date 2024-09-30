@@ -1,5 +1,6 @@
 package com.alishahidi.api.core.validation;
 
+import com.alishahidi.api.core.response.Response;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -11,32 +12,32 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
-class ErrorHandlingControllerAdvice {
+class ValidationErrorHandlingControllerAdvice {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    ValidationErrorResponse onConstraintValidationException(
+    Response<ValidationErrorResponse> onConstraintValidationException(
             ConstraintViolationException e) {
         ValidationErrorResponse error = new ValidationErrorResponse();
         for (ConstraintViolation violation : e.getConstraintViolations()) {
             error.getErrors().add(
                     new Violation(violation.getPropertyPath().toString(), violation.getMessage()));
         }
-        return error;
+        return Response.error(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    ValidationErrorResponse onMethodArgumentNotValidException(
+    Response<ValidationErrorResponse> onMethodArgumentNotValidException(
             MethodArgumentNotValidException e) {
         ValidationErrorResponse error = new ValidationErrorResponse();
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
             error.getErrors().add(
                     new Violation(fieldError.getField(), fieldError.getDefaultMessage()));
         }
-        return error;
+        return Response.error(error, HttpStatus.BAD_REQUEST);
     }
 
 }

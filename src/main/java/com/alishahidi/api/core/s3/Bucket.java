@@ -55,6 +55,16 @@ public class Bucket {
         }
     }
 
+    public CompletableFuture<String> put(String key, Path path, String folderName) {
+        return strategy.put(client, name, key, path, folderName)
+                .thenApply(s3Key -> {
+                    return s3Key;
+                })
+                .exceptionally(ex -> {
+                    return null;
+                });
+    }
+
     public CompletableFuture<String> put(String key, Path path) {
         return strategy.put(client, name, key, path)
                 .thenApply(s3Key -> {

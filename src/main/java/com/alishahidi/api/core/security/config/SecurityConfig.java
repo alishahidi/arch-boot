@@ -30,7 +30,8 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login",
                                 "/api/hello/**",
-                                "/error"
+                                "/error",
+                                "/api/document/upload"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
