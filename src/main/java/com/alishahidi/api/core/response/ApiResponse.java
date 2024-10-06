@@ -13,43 +13,43 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Response<T> implements Serializable {
+public class ApiResponse<T> implements Serializable {
     String type;
     int status;
     T data;
     LocalDateTime timestamp;
 
-    public static <T> Response<T> success(T data) {
-        return Response.<T>builder()
-                .type(ResponseType.DATA.getName())
-                .status(ResponseType.DATA.getStatus().value())
+    public static <T> ApiResponse<T> success(T data) {
+        return ApiResponse.<T>builder()
+                .type(ApiResponseType.DATA.getName())
+                .status(ApiResponseType.DATA.getStatus().value())
                 .data(data)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
 
-    public static <T> Response<T> error(T data, HttpStatus status) {
-        return Response.<T>builder()
-                .type(ResponseType.ERROR.getName())
+    public static <T> ApiResponse<T> error(T data, HttpStatus status) {
+        return ApiResponse.<T>builder()
+                .type(ApiResponseType.ERROR.getName())
                 .status(status.value())
                 .data(data)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
 
-    public static <T> Response<T> info(T data, HttpStatus status) {
-        return Response.<T>builder()
-                .type(ResponseType.INFO.getName())
+    public static <T> ApiResponse<T> info(T data, HttpStatus status) {
+        return ApiResponse.<T>builder()
+                .type(ApiResponseType.INFO.getName())
                 .status(status.value())
                 .data(data)
                 .timestamp(LocalDateTime.now())
                 .build();
     }
 
-    public static <T> Response<T> warning(T data) {
-        return Response.<T>builder()
-                .type(ResponseType.WARNING.getName())
-                .status(ResponseType.WARNING.getStatus().value())
+    public static <T> ApiResponse<T> warning(T data) {
+        return ApiResponse.<T>builder()
+                .type(ApiResponseType.WARNING.getName())
+                .status(ApiResponseType.WARNING.getStatus().value())
                 .data(data)
                 .timestamp(LocalDateTime.now())
                 .build();

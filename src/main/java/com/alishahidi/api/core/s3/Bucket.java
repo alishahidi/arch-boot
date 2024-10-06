@@ -1,11 +1,17 @@
 package com.alishahidi.api.core.s3;
 
+import com.alishahidi.api.core.document.Document;
 import com.alishahidi.api.core.s3.config.S3ClientConfig;
 import com.alishahidi.api.core.s3.strategy.BucketStrategy;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import reactor.core.publisher.Mono;
+import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
@@ -73,5 +79,15 @@ public class Bucket {
                 .exceptionally(ex -> {
                     return null;
                 });
+    }
+
+    public Mono<InputStream> get(Document document) {
+        return Mono.fromFuture(() -> client.getObject(
+                GetObjectRequest.builder()
+                        .bucket(document.getScope().getBucket())
+                        .key(document.getPath())
+                        .build(),
+                AsyncResponseTransformer.toBytes()
+        )).map(response -> new ByteArrayInputStream(response.asByteArray()));
     }
 }

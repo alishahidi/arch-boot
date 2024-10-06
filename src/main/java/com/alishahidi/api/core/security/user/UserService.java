@@ -4,6 +4,7 @@ import com.alishahidi.api.core.security.jwt.JwtService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,12 +16,15 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService {
-    PasswordEncoder passwordEncoder;
-    JwtService jwtService;
-    AuthenticationManager authenticationManager;
-    UserRepository userRepository;
+    final PasswordEncoder passwordEncoder;
+    final JwtService jwtService;
+    final AuthenticationManager authenticationManager;
+    final UserRepository userRepository;
+
+    @Value("${security.jwt.exp}")
+    Long jwtExp;
 
     public UserResponseDto register(UserRegisterDto request) {
         User user = User
@@ -33,7 +37,7 @@ public class UserService {
                 .build();
 
         User createdUser = userRepository.save(user);
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user.getUsername(), jwtExp);
 
         return UserMapper.INSTANCE.toResponseDto(createdUser, jwtToken);
     }
@@ -47,7 +51,7 @@ public class UserService {
         );
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
-        String jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user.getUsername(), jwtExp);
 
         return UserMapper.INSTANCE.toResponseDto(user, jwtToken);
     }

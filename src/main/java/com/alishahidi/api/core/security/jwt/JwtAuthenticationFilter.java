@@ -1,5 +1,6 @@
 package com.alishahidi.api.core.security.jwt;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,15 +39,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             final String username;
 
             jwt = authHeader.substring(7);
+            Claims claims = jwtService.extractAllClaims(jwt);
             try {
-                username = jwtService.extractUsername(jwt);
+                username = claims.getSubject();
             } catch (Exception e) {
                 filterChain.doFilter(request, response);
                 return;
             }
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+                if (username.equals(userDetails.getUsername()) && jwtService.isTokenValid(jwt)) {
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

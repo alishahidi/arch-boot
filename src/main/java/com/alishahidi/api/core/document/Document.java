@@ -1,5 +1,6 @@
 package com.alishahidi.api.core.document;
 
+import com.alishahidi.api.core.s3.S3Scope;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -28,6 +29,7 @@ public class Document {
     Long size;
     String type;
     String extension;
+    S3Scope scope;
 
     @CreationTimestamp
     Date createdAt;

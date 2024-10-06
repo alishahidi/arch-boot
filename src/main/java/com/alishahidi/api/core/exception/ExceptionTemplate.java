@@ -14,7 +14,10 @@ public enum ExceptionTemplate {
     FILE_PROCESS("error.file.process", HttpStatus.BAD_REQUEST),
     IMAGE_TYPE_ERROR("error.image.type", HttpStatus.BAD_REQUEST),
     PERSON_NOT_FOUND("error.person.not.found", HttpStatus.NOT_FOUND),
-    FILE_MIME_TYPE("error.file.type", HttpStatus.BAD_REQUEST);
+    S3_SCOPE_ERROR("error.s3.scope.error", HttpStatus.BAD_REQUEST),
+    FILE_MIME_TYPE("error.file.type", HttpStatus.BAD_REQUEST),
+    ENTITY_NOT_FOUND("entity.not.found", HttpStatus.NOT_FOUND),
+    TOKEN_NOT_VALID("token.not.valid", HttpStatus.UNAUTHORIZED);
 
     String key;
     HttpStatus status;

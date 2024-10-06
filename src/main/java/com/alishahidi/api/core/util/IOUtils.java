@@ -62,4 +62,8 @@ public class IOUtils {
             throw ExceptionUtil.make(ExceptionTemplate.FILE_PROCESS);
         }
     }
+
+    public String extractFileNameWithS3Key(String s3Key) {
+        return s3Key.substring(s3Key.lastIndexOf("/") + 1);
+    }
 }

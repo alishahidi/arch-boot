@@ -31,7 +31,7 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/hello/**",
                                 "/error",
-                                "/api/document/upload"
+                                "/api/document/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum ResponseType {
+public enum ApiResponseType {
 
     INFO("info", HttpStatus.OK),
     WARNING("warning", HttpStatus.BAD_REQUEST),
