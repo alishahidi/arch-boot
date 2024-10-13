@@ -56,6 +56,14 @@ s3:
     access: access
     secret: secret
 
+security:
+  jwt:
+    exp: 86400000
+
+document:
+  jwt:
+    exp: 3600000
+
 #    this config for custom executor service made in core
 config:
   executor:
