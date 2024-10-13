@@ -7,11 +7,22 @@ logging:
       springframework:
         security: DEBUG
 
+
+
 spring:
   datasource:
-    username: ${DB_USER:user}
-    url: jdbc:postgresql://${DB_HOST:host}:${DB_PORT:5432}/${DB_SCHEMA:schema}
-    password: ${DB_PASS:pass}
+    url: jdbc:sqlserver://109.162.255.136:1414;database=core;encrypt=true;trustServerCertificate=true
+    # url: jdbc:sqlserver://localhost:1433;database=hamed;encrypt=true;trustServerCertificate=true
+    username: hamed
+    password: 12H23z34r
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
+#spring:
+#  datasource:
+#    username: ${DB_USER:user}
+#    url: jdbc:postgresql://${DB_HOST:host}:${DB_PORT:5432}/${DB_SCHEMA:schema}
+#    password: ${DB_PASS:pass}
+
     hikari:
       maximum-pool-size: 20
       minimum-idle: 10
