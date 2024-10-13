@@ -36,6 +36,7 @@
         <org.apache.pdfbox.version>2.0.31</org.apache.pdfbox.version>
         <org.apache.tika.version>2.9.2</org.apache.tika.version>
         <net.coobird.thumbnailator.version>0.4.20</net.coobird.thumbnailator.version>
+        <org.freemarker.version>2.3.33</org.freemarker.version>
     </properties>
     <dependencies>
         <dependency>
@@ -122,6 +123,11 @@
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
             <version>${net.coobird.thumbnailator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>${org.freemarker.version}</version>
         </dependency>
     </dependencies>
 
