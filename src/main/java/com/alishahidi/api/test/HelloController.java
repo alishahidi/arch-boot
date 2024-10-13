@@ -6,7 +6,7 @@ import com.alishahidi.api.core.i18n.I18nUtil;
 import com.alishahidi.api.core.image.ImageProcessor;
 import com.alishahidi.api.core.pdf.Pdf;
 import com.alishahidi.api.core.pdf.PdfSelection;
-import com.alishahidi.api.core.response.Response;
+import com.alishahidi.api.core.response.ApiResponse;
 import com.alishahidi.api.core.s3.Bucket;
 import com.alishahidi.api.core.s3.config.S3LiaraConfig;
 import com.alishahidi.api.core.s3.strategy.StandardBucketStrategy;
@@ -33,19 +33,19 @@ public class HelloController {
     S3LiaraConfig s3LiaraConfig;
 
     @GetMapping("/")
-    public Response<String> hello() {
-        return Response.success("Hii");
+    public ApiResponse<String> hello() {
+        return ApiResponse.success("Hii");
     }
 
     @GetMapping("/error")
-    public Response<String> error() {
+    public ApiResponse<String> error() {
         Boolean a = true;
 
         if (a) {
             throw ExceptionUtil.make(ExceptionTemplate.PERSON_NOT_FOUND);
         }
 
-        return Response.success("Hii");
+        return ApiResponse.success("Hii");
     }
 
     @PostMapping("/validate")
@@ -86,16 +86,16 @@ public class HelloController {
     }
 
     @PostMapping("/fileDetail")
-    public Response<FileDetails> fileDetail(@RequestParam("file") MultipartFile file) {
-        return Response.success(IOUtils.fileDetails(IOUtils.multipartFileToPath(file)));
+    public ApiResponse<FileDetails> fileDetail(@RequestParam("file") MultipartFile file) {
+        return ApiResponse.success(IOUtils.fileDetails(IOUtils.multipartFileToPath(file)));
     }
 
     @PostMapping("/compressImage")
-    public Response<String> compressImage(@RequestParam("file") MultipartFile file) {
+    public ApiResponse<String> compressImage(@RequestParam("file") MultipartFile file) {
         FileDetails fileDetails = IOUtils.fileDetails(IOUtils.multipartFileToPath(file));
         FileDetails newFileDetails = IOUtils.fileDetails(ImageProcessor.create()
                 .process(IOUtils.multipartFileToPath(file)));
 
-        return Response.success(fileDetails.getSize() + "   --   " + newFileDetails.getSize());
+        return ApiResponse.success(fileDetails.getSize() + "   --   " + newFileDetails.getSize());
     }
 }
