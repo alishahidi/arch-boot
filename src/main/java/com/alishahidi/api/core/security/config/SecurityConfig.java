@@ -31,7 +31,8 @@ public class SecurityConfig {
                                 "/api/auth/login",
                                 "/api/hello/**",
                                 "/error",
-                                "/api/document/**"
+                                "/api/document/**",
+                                "/api/hello-world/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
