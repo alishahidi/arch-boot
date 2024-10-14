@@ -1,0 +1,11 @@
+<entity>
+    <name>Car</name>
+    <generate>false</generate>
+    <fields>
+        <field>
+            <name>name</name>
+            <type>STRING</type>
+            <required>true</required>
+        </field>
+    </fields>
+</entity>

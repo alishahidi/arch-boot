@@ -1,0 +1,24 @@
+<entity>
+    <name>Address</name>
+    <generate>false</generate>
+    <fields>
+        <field>
+            <name>street</name>
+            <type>STRING</type>
+            <required>true</required>
+        </field>
+        <field>
+            <name>city</name>
+            <type>STRING</type>
+            <required>false</required>
+        </field>
+    </fields>
+    <relationships>
+        <relationship>
+            <relationshipType>ONE_TO_MANY</relationshipType>
+            <relatedEntityName>User</relatedEntityName>
+            <mappedBy>address</mappedBy>
+            <required>false</required>
+        </relationship>
+    </relationships>
+</entity>

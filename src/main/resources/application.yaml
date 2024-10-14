@@ -72,3 +72,6 @@ config:
 image-processor:
   ratio: 0.6
   scale: 1.0
+
+generator:
+  run: false

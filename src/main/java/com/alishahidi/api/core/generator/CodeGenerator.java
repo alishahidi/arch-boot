@@ -1,9 +1,7 @@
 package com.alishahidi.api.core.generator;
 
 
-import com.alishahidi.api.core.generator.model.EntityModel;
-import com.alishahidi.api.core.generator.model.FieldModel;
-import com.alishahidi.api.core.generator.model.RelationModel;
+import com.alishahidi.api.core.generator.model.*;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -13,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,30 +28,22 @@ public class CodeGenerator {
         basePackage = (new BasePackage()).getBasePackage();
     }
 
-    public static void main(String[] args) throws TemplateException, IOException {
+    public static void run() throws TemplateException, IOException {
+        String xmlFolderPath = "generate-xmls";
+
+        List<EntityModel> entities = XmlParser.readEntitiesFromXml(xmlFolderPath);
+
         CodeGenerator generator = new CodeGenerator();
 
-        EntityModel addressEntity = EntityModel.builder()
-                .entityName("Address")
-                .fields(List.of(
-                        new FieldModel("street", "String"),
-                        new FieldModel("city", "String")
-                ))
-                .build();
+        for (EntityModel entity : entities) {
+            if (entity.getGenerate()) {
+                generator.generate(entity);
+            }
+        }
 
-        EntityModel userEntity = EntityModel.builder()
-                .entityName("User")
-                .fields(List.of(
-                        new FieldModel("name", "String")
-                ))
-                .relations(List.of(
-                        RelationModel.fromEntityModel(addressEntity, "OneToOne", "user", null)
-                ))
-                .build();
-
-        generator.generate(addressEntity);
-        generator.generate(userEntity);
+        System.out.println("Entity generation completed.");
     }
+
 
     public void generate(EntityModel entityModel) throws IOException, TemplateException {
         Map<String, Object> data = new HashMap<>();
