@@ -1,0 +1,16 @@
+<entity>
+    <name>Address</name>
+    <generate>true</generate>
+    <fields>
+        <field>
+            <name>street</name>
+            <type>STRING</type>
+            <required>true</required>
+        </field>
+        <field>
+            <name>city</name>
+            <type>STRING</type>
+            <required>false</required>
+        </field>
+    </fields>
+</entity>

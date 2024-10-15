@@ -36,6 +36,8 @@
         <org.apache.pdfbox.version>2.0.31</org.apache.pdfbox.version>
         <org.apache.tika.version>2.9.2</org.apache.tika.version>
         <net.coobird.thumbnailator.version>0.4.20</net.coobird.thumbnailator.version>
+        <org.freemarker.version>2.3.33</org.freemarker.version>
+        <jackson.version>2.18.0</jackson.version>
     </properties>
     <dependencies>
         <dependency>
@@ -122,6 +124,26 @@
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
             <version>${net.coobird.thumbnailator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>${org.freemarker.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>

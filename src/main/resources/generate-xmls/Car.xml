@@ -1,0 +1,19 @@
+<entity>
+    <name>Car</name>
+    <generate>true</generate>
+    <fields>
+        <field>
+            <name>name</name>
+            <type>STRING</type>
+            <required>true</required>
+        </field>
+    </fields>
+    <relationships>
+        <relationship>
+            <relationshipType>MANY_TO_ONE</relationshipType>
+            <relatedEntityName>Address</relatedEntityName>
+            <foreignKey>address_id</foreignKey>
+            <required>true</required>
+        </relationship>
+    </relationships>
+</entity>
