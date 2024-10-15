@@ -1,19 +1,26 @@
 package ${basePackage}.${entityName?lower_case};
 
-import com.alishahidi.api.core.entity.BaseEntity;
+import ${basePackage}.core.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 <#assign imports = []>
 <#assign entityImports = []>
+<#list fields as field>
+    <#if field.type.requiresImport()>
+        <#if !imports?seq_contains(field.type.importPath)>
+            <#assign imports += [field.type.importPath]>
+        </#if>
+    </#if>
+</#list>
 <#list relationships as rel>
-    <#if rel.relationshipType == "OneToMany" || rel.relationshipType == "ManyToMany">
+    <#if rel.type.type == "OneToMany" || rel.type.type == "ManyToMany">
         <#if !imports?seq_contains("java.util.List")>
             <#assign imports += ["java.util.List"]>
         </#if>
     </#if>
-    <#if rel.relationshipType == "ManyToMany">
+    <#if rel.type.type == "ManyToMany">
         <#if !imports?seq_contains("java.util.Set")>
             <#assign imports += ["java.util.Set"]>
         </#if>
@@ -31,7 +38,6 @@ import ${imp};
 import ${imp};
 </#list>
 
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -43,31 +49,50 @@ import ${imp};
 public class ${entityName}Entity extends BaseEntity {
 
 <#list fields as field>
-    ${field.type} ${field.name};
+    <#if field.required>
+    @Column(nullable = false)
+    </#if>
+    ${field.type.type} ${field.name};
 </#list>
 
 <#list relationships as rel>
-    <#if rel.relationshipType == "OneToOne">
+    <#if rel.type.type == "OneToOne">
+        <#if rel.hasMappedBy()>
     @OneToOne(mappedBy = "${rel.mappedBy}", cascade = CascadeType.ALL)
+        <#else>
+    @OneToOne(cascade = CascadeType.ALL)
+        </#if>
     private ${rel.relatedEntityName}Entity ${rel.relatedEntityName?uncap_first};
     </#if>
-    <#if rel.relationshipType == "OneToMany">
+    <#if rel.type.type == "OneToMany">
+        <#if rel.hasMappedBy()>
     @OneToMany(mappedBy = "${rel.mappedBy}", cascade = CascadeType.ALL)
-    private List<${rel.relatedEntityName}Entity> ${rel.relatedEntityName?uncap_first}s;
+        <#else>
+    @OneToMany(cascade = CascadeType.ALL)
+        </#if>
+    List<${rel.relatedEntityName}Entity> ${rel.relatedEntityName?uncap_first};
     </#if>
-    <#if rel.relationshipType == "ManyToOne">
+    <#if rel.type.type == "ManyToOne">
     @ManyToOne
+        <#if rel.required>
     @JoinColumn(name = "${rel.foreignKey}", nullable = false)
-    private ${rel.relatedEntityName}Entity ${rel.relatedEntityName?uncap_first};
+        <#else>
+    @JoinColumn(name = "${rel.foreignKey}")
+        </#if>
+    ${rel.relatedEntityName}Entity ${rel.relatedEntityName?uncap_first};
     </#if>
-    <#if rel.relationshipType == "ManyToMany">
+    <#if rel.type.type == "ManyToMany">
+        <#if rel.hasMappedBy()>
+    @ManyToMany(mappedBy = "${rel.mappedBy}")
+        <#else>
     @ManyToMany
+        </#if>
     @JoinTable(
-    name = "${entityName?lower_case}_${rel.relatedEntityName?lower_case}",
-    joinColumns = @JoinColumn(name = "${entityName?lower_case}_id"),
-    inverseJoinColumns = @JoinColumn(name = "${rel.relatedEntityName?lower_case}_id")
+        name = "${entityName?lower_case}_${rel.relatedEntityName?lower_case}",
+        joinColumns = @JoinColumn(name = "${entityName?lower_case}_id"),
+        inverseJoinColumns = @JoinColumn(name = "${rel.relatedEntityName?lower_case}_id")
     )
-    private Set<${rel.relatedEntityName}Entity> ${rel.relatedEntityName?uncap_first}s;
+    Set<${rel.relatedEntityName}Entity> ${rel.relatedEntityName?uncap_first};
     </#if>
 </#list>
 }

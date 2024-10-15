@@ -1,6 +1,6 @@
 <entity>
     <name>Address</name>
-    <generate>false</generate>
+    <generate>true</generate>
     <fields>
         <field>
             <name>street</name>
@@ -13,12 +13,4 @@
             <required>false</required>
         </field>
     </fields>
-    <relationships>
-        <relationship>
-            <relationshipType>ONE_TO_MANY</relationshipType>
-            <relatedEntityName>User</relatedEntityName>
-            <mappedBy>address</mappedBy>
-            <required>false</required>
-        </relationship>
-    </relationships>
 </entity>

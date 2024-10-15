@@ -1,6 +1,6 @@
 <entity>
     <name>Car</name>
-    <generate>false</generate>
+    <generate>true</generate>
     <fields>
         <field>
             <name>name</name>
@@ -8,4 +8,12 @@
             <required>true</required>
         </field>
     </fields>
+    <relationships>
+        <relationship>
+            <relationshipType>MANY_TO_ONE</relationshipType>
+            <relatedEntityName>Address</relatedEntityName>
+            <foreignKey>address_id</foreignKey>
+            <required>true</required>
+        </relationship>
+    </relationships>
 </entity>

@@ -54,15 +54,23 @@ public class CodeGenerator {
         data.put("relationships", entityModel.getRelations() != null ? entityModel.getRelations() : List.of());
 
         generateFile("EntityTemplate.ftl", entityModel.getEntityName(), "Entity.java", data);
-//        generateFile("controller.ftl", entityName + "Controller.java", data);
-//        generateFile("service.ftl", entityName + "Service.java", data);
-//        generateFile("repository.ftl", entityName + "Repository.java", data);
-//        generateFile("dto.ftl", entityName + "CreateDto.java", data);
-//        generateFile("dto.ftl", entityName + "UpdateDto.java", data);
-//        generateFile("dto.ftl", entityName + "LoadDto.java", data);
+        generateFile("ControllerTemplate.ftl", entityModel.getEntityName(), "Controller.java", data);
+        generateFile("ServiceTemplate.ftl", entityModel.getEntityName(), "Service.java", data);
+        generateFile("RepositoryTemplate.ftl", entityModel.getEntityName(), "Repository.java", data);
+        data.put("dtoType", "Load");
+        generateFile("DtoTemplate.ftl", entityModel.getEntityName(), "LoadDto.java", data, "dto");
+        data.put("dtoType", "Update");
+        generateFile("DtoTemplate.ftl", entityModel.getEntityName(), "UpdateDto.java", data, "dto");
+        data.put("dtoType", "Create");
+        generateFile("DtoTemplate.ftl", entityModel.getEntityName(), "CreateDto.java", data, "dto");
+        generateFile("MapperTemplate.ftl", entityModel.getEntityName(), "Mapper.java", data);
     }
 
     private void generateFile(String templateName, String entityName, String suffixName, Map<String, Object> data) throws IOException, TemplateException {
+        generateFile(templateName, entityName, suffixName, data, null);
+    }
+
+    private void generateFile(String templateName, String entityName, String suffixName, Map<String, Object> data, String folder) throws IOException, TemplateException {
         String srcMainJavaPath = "src/main/java/";
 
         String packageDir = basePackage.replace(".", "/");
@@ -70,6 +78,10 @@ public class CodeGenerator {
         String safeEntityName = entityName.toLowerCase();
 
         String entityDirectoryPath = srcMainJavaPath + packageDir + "/" + safeEntityName;
+
+        if(folder != null){
+            entityDirectoryPath = entityDirectoryPath + "/" + folder;
+        }
 
         // Create directories if they don't exist
         File directory = new File(entityDirectoryPath);
