@@ -8,11 +8,13 @@ import lombok.experimental.FieldDefaults;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.core.async.AsyncResponseTransformer;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -79,6 +81,28 @@ public class Bucket {
                 .exceptionally(ex -> {
                     return null;
                 });
+    }
+
+    public CompletableFuture<Void> remove(String key) {
+        return client.deleteObject(DeleteObjectRequest.builder()
+                        .bucket(name)
+                        .key(key)
+                        .build())
+                .thenRun(() -> {
+                    System.out.println("Deleted: " + key);
+                })
+                .exceptionally(ex -> {
+                    System.err.println("Failed to delete: " + key + ", reason: " + ex.getMessage());
+                    return null;
+                });
+    }
+
+    public CompletableFuture<Void> removeFiles(List<String> keys) {
+        List<CompletableFuture<Void>> futures = keys.stream()
+                .map(this::remove)
+                .toList();
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
     public Mono<InputStream> get(Document document) {

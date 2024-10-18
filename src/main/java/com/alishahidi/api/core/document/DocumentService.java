@@ -2,6 +2,7 @@ package com.alishahidi.api.core.document;
 
 import com.alishahidi.api.core.exception.ExceptionTemplate;
 import com.alishahidi.api.core.exception.ExceptionUtil;
+import com.alishahidi.api.core.garbagecollector.collector.DocumentExpiredGarbageCollector;
 import com.alishahidi.api.core.image.ImageProcessor;
 import com.alishahidi.api.core.response.ApiResponse;
 import com.alishahidi.api.core.s3.Bucket;
@@ -38,6 +39,7 @@ public class DocumentService {
     final S3LiaraConfig s3LiaraConfig;
     final DocumentRepository documentRepository;
     final JwtService jwtService;
+    final DocumentExpiredGarbageCollector documentExpiredGarbageCollector;
 
     @Value("${document.jwt.exp}")
     Long documentExp;
@@ -79,7 +81,8 @@ public class DocumentService {
         IOUtils.deleteFile(tmpPath);
 
         Document document = Document.builder()
-                .type(fileDetails.getType().getName())
+                .type(fileDetails.getType())
+                .mimeType(fileDetails.getMimeType())
                 .extension(fileDetails.getExtension())
                 .size(fileDetails.getSize())
                 .scope(s3Scope)
@@ -88,6 +91,8 @@ public class DocumentService {
 
         Document savedDocument = documentRepository.save(document);
         DocumentDto documentDto = DocumentMapper.INSTANCE.toDto(savedDocument);
+
+        documentExpiredGarbageCollector.link(savedDocument);
 
         return CompletableFuture.completedFuture(ApiResponse.success(documentDto));
     }

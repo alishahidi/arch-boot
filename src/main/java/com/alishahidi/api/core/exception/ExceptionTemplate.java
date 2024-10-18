@@ -17,7 +17,8 @@ public enum ExceptionTemplate {
     S3_SCOPE_ERROR("error.s3.scope.error", HttpStatus.BAD_REQUEST),
     FILE_MIME_TYPE("error.file.type", HttpStatus.BAD_REQUEST),
     ENTITY_NOT_FOUND("entity.not.found", HttpStatus.NOT_FOUND),
-    TOKEN_NOT_VALID("token.not.valid", HttpStatus.UNAUTHORIZED);
+    TOKEN_NOT_VALID("token.not.valid", HttpStatus.UNAUTHORIZED),
+    CONTRACT_DOCUMENT_PROCESS_ERROR("document.process.error", HttpStatus.BAD_REQUEST);
 
     String key;
     HttpStatus status;

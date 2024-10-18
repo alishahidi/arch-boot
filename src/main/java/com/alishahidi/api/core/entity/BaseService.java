@@ -1,5 +1,6 @@
 package com.alishahidi.api.core.entity;
 
+import com.alishahidi.api.core.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,7 @@ public abstract class BaseService<T extends BaseEntity, C extends BaseDto, U ext
     protected abstract BaseMapper<T, C, U, L> getMapper();
 
     @Transactional
-    public L saveOrUpdate(Long id, U updateDto, C createDto) {
+    public ApiResponse<L> saveOrUpdate(Long id, U updateDto, C createDto) {
         if (id != null) {
             return update(id, updateDto);
         } else {
@@ -22,7 +23,7 @@ public abstract class BaseService<T extends BaseEntity, C extends BaseDto, U ext
         }
     }
 
-    public L update(Long id, U updateDto) {
+    public ApiResponse<L> update(Long id, U updateDto) {
         Optional<T> existingEntityOpt = getRepository().findById(id);
 
         if (existingEntityOpt.isPresent() && existingEntityOpt.get().getDeletedAt() == null) {
@@ -31,31 +32,31 @@ public abstract class BaseService<T extends BaseEntity, C extends BaseDto, U ext
             existingEntity.setId(id);
             existingEntity.setUpdatedAt(new Date());
             beforeSaveOrUpdate(existingEntity);
-            return getMapper().load(getRepository().save(existingEntity));
+            return ApiResponse.success(getMapper().load(getRepository().save(existingEntity)));
         } else {
             throw new EntityNotFoundException("Entity with ID " + id + " not found or has been deleted.");
         }
     }
 
-    public L create(C createDto) {
+    public ApiResponse<L> create(C createDto) {
         T entity = getMapper().create(createDto);
         entity.setCreatedAt(new Date());
         entity.setUpdatedAt(new Date());
         beforeSaveOrUpdate(entity);
-        return getMapper().load(getRepository().save(entity));
+        return ApiResponse.success(getMapper().load(getRepository().save(entity)));
     }
 
     public void beforeSaveOrUpdate(T entity) {
     }
 
     @Transactional(readOnly = true)
-    public Optional<L> findById(Long id) {
-        return getRepository().findByIdAndDeletedAtIsNull(id).map(getMapper()::load);
+    public ApiResponse<L> findById(Long id) {
+        return ApiResponse.success(getRepository().findByIdAndDeletedAtIsNull(id).map(getMapper()::load).orElseThrow(() -> new EntityNotFoundException("Entity not found")));
     }
 
     @Transactional(readOnly = true)
-    public List<L> findAll() {
-        return getRepository().findByDeletedAtIsNull().stream().map(getMapper()::load).toList();
+    public ApiResponse<List<L>> findAll() {
+        return ApiResponse.success(getRepository().findByDeletedAtIsNull().stream().map(getMapper()::load).toList());
     }
 
     @Transactional

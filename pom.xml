@@ -38,6 +38,7 @@
         <net.coobird.thumbnailator.version>0.4.20</net.coobird.thumbnailator.version>
         <org.freemarker.version>2.3.33</org.freemarker.version>
         <jackson.version>2.18.0</jackson.version>
+        <org.redisson.version>3.37.0</org.redisson.version>
     </properties>
     <dependencies>
         <dependency>
@@ -144,6 +145,11 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>${org.redisson.version}</version>
         </dependency>
     </dependencies>
 

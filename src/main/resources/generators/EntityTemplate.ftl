@@ -75,9 +75,9 @@ public class ${entityName}Entity extends BaseEntity {
     <#if rel.type.type == "ManyToOne">
     @ManyToOne
         <#if rel.required>
-    @JoinColumn(name = "${rel.foreignKey}", nullable = false)
+    @JoinColumn(name = "${rel.relatedEntityName?lower_case}_id", nullable = false)
         <#else>
-    @JoinColumn(name = "${rel.foreignKey}")
+    @JoinColumn(name = "${rel.relatedEntityName?lower_case}_id")
         </#if>
     ${rel.relatedEntityName}Entity ${rel.relatedEntityName?uncap_first};
     </#if>

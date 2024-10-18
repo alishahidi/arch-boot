@@ -56,6 +56,7 @@ public class IOUtils {
             return FileDetails.builder()
                     .size(size)
                     .type(FileType.fromMimeType(type))
+                    .mimeType(type)
                     .extension(extension)
                     .build();
         } catch (IOException e) {

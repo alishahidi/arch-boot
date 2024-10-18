@@ -1,5 +1,7 @@
 package com.alishahidi.api.core.document;
 
+import com.alishahidi.api.core.s3.S3Scope;
+import com.alishahidi.api.core.util.FileType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,10 +16,13 @@ import java.util.Date;
 public class DocumentDto {
     Long id;
 
-    String type;
-    String extension;
-    Long size;
     String path;
+
+    Long size;
+    FileType type;
+    String mimeType;
+    String extension;
+    S3Scope scope;
 
     Date createdAt;
     Date updatedAt;

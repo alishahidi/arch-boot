@@ -14,5 +14,6 @@ import java.util.Date;
 public class FileDetails {
     FileType type;
     String extension;
+    String mimeType;
     Long size;
 }

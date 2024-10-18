@@ -6,6 +6,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 @UtilityClass
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -17,4 +18,11 @@ public class ExecutorUtils {
         return Executors.newFixedThreadPool(size);
     }
 
+    public ScheduledExecutorService scheduledThreadPool(){
+        return Executors.newScheduledThreadPool(size);
+    }
+
+    public ScheduledExecutorService scheduledThreadPool(int size_){
+        return Executors.newScheduledThreadPool(size_);
+    }
 }

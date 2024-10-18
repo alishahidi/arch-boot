@@ -10,7 +10,7 @@ logging:
 spring:
   datasource:
     username: ${DB_USER:user}
-    url: jdbc:postgresql://${DB_HOST:host}:${DB_PORT:5432}/${DB_SCHEMA:schema}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_SCHEMA:schema}
     password: ${DB_PASS:pass}
     hikari:
       maximum-pool-size: 20
@@ -19,6 +19,11 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 20000
       leak-detection-threshold: 2000
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
   servlet:
     multipart:
@@ -75,3 +80,8 @@ image-processor:
 
 generator:
   run: false
+
+garbage:
+  collector:
+    document:
+      time: 10000

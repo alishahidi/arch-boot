@@ -1,6 +1,7 @@
 package com.alishahidi.api.core.document;
 
 import com.alishahidi.api.core.s3.S3Scope;
+import com.alishahidi.api.core.util.FileType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +28,8 @@ public class Document {
     String path;
 
     Long size;
-    String type;
+    FileType type;
+    String mimeType;
     String extension;
     S3Scope scope;
 
