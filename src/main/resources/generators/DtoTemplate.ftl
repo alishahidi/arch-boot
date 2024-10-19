@@ -13,8 +13,12 @@ import lombok.experimental.SuperBuilder;
     </#if>
 </#list>
 <#list relationships as rel>
-    <#if !imports?seq_contains("${rel.relatedEntityPackage}.dto.${rel.relatedEntityName}LoadDto")>
-        <#assign imports += ["${rel.relatedEntityPackage}.dto.${rel.relatedEntityName}LoadDto"]>
+    <#if rel.document>
+        <#assign imports += [basePackage + ".core.document.DocumentDto"]>
+    <#else>
+        <#if !imports?seq_contains("${rel.relatedEntityPackage}.dto.${rel.relatedEntityName}LoadDto")>
+            <#assign imports += ["${rel.relatedEntityPackage}.dto.${rel.relatedEntityName}LoadDto"]>
+        </#if>
     </#if>
     <#if rel.type.type == "OneToMany" || rel.type.type == "ManyToMany">
         <#if !imports?seq_contains("java.util.List")>
@@ -38,10 +42,18 @@ public class ${entityName}${dtoType}Dto extends BaseDto {
 </#list>
 <#list relationships as rel>
     <#if rel.type.type == "OneToOne" || rel.type.type == "ManyToOne">
+        <#if rel.document>
+    DocumentDto ${rel.name?uncap_first};
+        <#else>
     ${rel.relatedEntityName}LoadDto ${rel.relatedEntityName?uncap_first};
+        </#if>
     </#if>
     <#if rel.type.type == "OneToMany" || rel.type.type == "ManyToMany">
+        <#if rel.document>
+    List<DocumentDto> ${rel.name?uncap_first};
+        <#else>
     List<${rel.relatedEntityName}LoadDto> ${rel.relatedEntityName?uncap_first};
+        </#if>
     </#if>
 </#list>
 }

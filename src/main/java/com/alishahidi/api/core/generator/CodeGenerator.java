@@ -48,22 +48,22 @@ public class CodeGenerator {
     public void generate(EntityModel entityModel) throws IOException, TemplateException {
         Map<String, Object> data = new HashMap<>();
         data.put("basePackage", basePackage);
-        data.put("tableName", convertToSnakeCase(entityModel.getEntityName()));
-        data.put("entityName", entityModel.getEntityName());
-        data.put("fields", entityModel.getFields());
+        data.put("tableName", convertToSnakeCase(entityModel.getName()));
+        data.put("entityName", entityModel.getName());
+        data.put("fields", entityModel.getFields() != null ? entityModel.getFields() : List.of());
         data.put("relationships", entityModel.getRelations() != null ? entityModel.getRelations() : List.of());
 
-        generateFile("EntityTemplate.ftl", entityModel.getEntityName(), "Entity.java", data);
-        generateFile("ControllerTemplate.ftl", entityModel.getEntityName(), "Controller.java", data);
-        generateFile("ServiceTemplate.ftl", entityModel.getEntityName(), "Service.java", data);
-        generateFile("RepositoryTemplate.ftl", entityModel.getEntityName(), "Repository.java", data);
+        generateFile("EntityTemplate.ftl", entityModel.getName(), "Entity.java", data);
+        generateFile("ControllerTemplate.ftl", entityModel.getName(), "Controller.java", data);
+        generateFile("ServiceTemplate.ftl", entityModel.getName(), "Service.java", data);
+        generateFile("RepositoryTemplate.ftl", entityModel.getName(), "Repository.java", data);
         data.put("dtoType", "Load");
-        generateFile("DtoTemplate.ftl", entityModel.getEntityName(), "LoadDto.java", data, "dto");
+        generateFile("DtoTemplate.ftl", entityModel.getName(), "LoadDto.java", data, "dto");
         data.put("dtoType", "Update");
-        generateFile("DtoTemplate.ftl", entityModel.getEntityName(), "UpdateDto.java", data, "dto");
+        generateFile("DtoTemplate.ftl", entityModel.getName(), "UpdateDto.java", data, "dto");
         data.put("dtoType", "Create");
-        generateFile("DtoTemplate.ftl", entityModel.getEntityName(), "CreateDto.java", data, "dto");
-        generateFile("MapperTemplate.ftl", entityModel.getEntityName(), "Mapper.java", data);
+        generateFile("DtoTemplate.ftl", entityModel.getName(), "CreateDto.java", data, "dto");
+        generateFile("MapperTemplate.ftl", entityModel.getName(), "Mapper.java", data);
     }
 
     private void generateFile(String templateName, String entityName, String suffixName, Map<String, Object> data) throws IOException, TemplateException {

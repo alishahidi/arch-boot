@@ -16,16 +16,16 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EntityModel {
     @JacksonXmlProperty(localName = "name")
-    String entityName;
+    String name;
 
     @JacksonXmlProperty(localName = "generate")
     Boolean generate;
 
     @JacksonXmlElementWrapper(localName = "fields")
     @JacksonXmlProperty(localName = "field")
-    List<FieldModel> fields;
+    List<FieldModel> fields = new ArrayList<>();
 
     @JacksonXmlElementWrapper(localName = "relationships")
     @JacksonXmlProperty(localName = "relationship")
-    List<RelationModel> relations = new ArrayList<>();;
+    List<RelationModel> relations = new ArrayList<>();
 }

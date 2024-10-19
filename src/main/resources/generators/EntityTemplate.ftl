@@ -25,9 +25,15 @@ import lombok.experimental.SuperBuilder;
             <#assign imports += ["java.util.Set"]>
         </#if>
     </#if>
-    <#if rel.relatedEntityName != entityName>
-        <#if !entityImports?seq_contains("${rel.relatedEntityPackage}.${rel.relatedEntityName}Entity")>
-            <#assign entityImports += ["${rel.relatedEntityPackage}.${rel.relatedEntityName}Entity"]>
+    <#if rel.document>
+        <#if !imports?seq_contains(basePackage + ".core.document.Document")>
+            <#assign imports += [basePackage + ".core.document.Document"]>
+        </#if>
+    <#else>
+        <#if rel.relatedEntityName != entityName>
+            <#if !entityImports?seq_contains("${rel.relatedEntityPackage}.${rel.relatedEntityName}Entity")>
+                <#assign entityImports += ["${rel.relatedEntityPackage}.${rel.relatedEntityName}Entity"]>
+            </#if>
         </#if>
     </#if>
 </#list>
@@ -62,7 +68,11 @@ public class ${entityName}Entity extends BaseEntity {
         <#else>
     @OneToOne(cascade = CascadeType.ALL)
         </#if>
-    private ${rel.relatedEntityName}Entity ${rel.relatedEntityName?uncap_first};
+        <#if rel.document>
+    Document ${rel.name?uncap_first};
+        <#else>
+    ${rel.relatedEntityName}Entity ${rel.relatedEntityName?uncap_first};
+        </#if>
     </#if>
     <#if rel.type.type == "OneToMany">
         <#if rel.hasMappedBy()>
@@ -70,7 +80,11 @@ public class ${entityName}Entity extends BaseEntity {
         <#else>
     @OneToMany(cascade = CascadeType.ALL)
         </#if>
+        <#if rel.document>
+    List<Document> ${rel.name?uncap_first};
+        <#else>
     List<${rel.relatedEntityName}Entity> ${rel.relatedEntityName?uncap_first};
+        </#if>
     </#if>
     <#if rel.type.type == "ManyToOne">
     @ManyToOne
@@ -79,7 +93,11 @@ public class ${entityName}Entity extends BaseEntity {
         <#else>
     @JoinColumn(name = "${rel.relatedEntityName?lower_case}_id")
         </#if>
-    ${rel.relatedEntityName}Entity ${rel.relatedEntityName?uncap_first};
+    <#if rel.document>
+        Document ${rel.name?uncap_first};
+    <#else>
+        ${rel.relatedEntityName}Entity ${rel.relatedEntityName?uncap_first};
+    </#if>
     </#if>
     <#if rel.type.type == "ManyToMany">
         <#if rel.hasMappedBy()>

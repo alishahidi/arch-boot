@@ -29,19 +29,17 @@ public class RelationModel {
     @JacksonXmlProperty(localName = "required")
     private boolean required;
 
-    public static RelationModel fromEntityModel(EntityModel entityModel, RelationType type, String mappedBy, String foreignKey, boolean required) {
-        return RelationModel.builder()
-                .type(type)
-                .relatedEntityName(entityModel.getEntityName())
-                .relatedEntityPackage(generatePackageName(entityModel.getEntityName()))
-                .mappedBy(mappedBy)
-                .foreignKey(foreignKey)
-                .required(required)
-                .build();
-    }
+    @JacksonXmlProperty(localName = "name")
+    private String name;
 
-    public static String generatePackageName(String entityName) {
-        return (new BasePackage()).getBasePackage() + "." + entityName.toLowerCase();
+    @JacksonXmlProperty(localName = "document")
+    private boolean document = false;
+
+    public static String generatePackageName(String name) {
+        if(name == null){
+            return null;
+        }
+        return (new BasePackage()).getBasePackage() + "." + name.toLowerCase();
     }
 
     public boolean hasMappedBy() {
