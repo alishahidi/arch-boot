@@ -7,11 +7,9 @@ import com.alishahidi.api.core.util.FileDetails;
 import com.alishahidi.api.core.util.FileType;
 import com.alishahidi.api.core.util.IOUtils;
 import net.coobird.thumbnailator.Thumbnails;
-import org.springframework.beans.factory.annotation.Value;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -22,6 +20,8 @@ public class ImageProcessor {
     private Double ratio;
     private Integer width;
     private Integer height;
+    private Watermark watermark;
+    private boolean copyright = false;
 
     private ImageProcessor() {
         ImageConfig imageConfig = SpringContext.getBean(ImageConfig.class);
@@ -32,6 +32,16 @@ public class ImageProcessor {
 
     public static ImageProcessor create() {
         return new ImageProcessor();
+    }
+
+    public ImageProcessor copyright() {
+        this.copyright = true;
+        return this;
+    }
+
+    public ImageProcessor watermark(Watermark watermark) {
+        this.watermark = watermark;
+        return this;
     }
 
     public ImageProcessor scale(Double scale) {
@@ -56,11 +66,10 @@ public class ImageProcessor {
 
     public Path process(Path inputPath) {
         validateInput(inputPath);
-
         FileDetails fileDetails = IOUtils.fileDetails(inputPath);
 
         if (fileDetails.getType().equals(FileType.IMAGE)) {
-            return processImage(inputPath, fileDetails.getExtension());
+            return processImage(inputPath, fileDetails.getExtension().trim().replaceAll("\\.", ""));
         } else {
             throw ExceptionUtil.make(ExceptionTemplate.IMAGE_TYPE_ERROR);
         }
@@ -68,9 +77,22 @@ public class ImageProcessor {
 
     private Path processImage(Path inputPath, String extension) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            Thumbnails.Builder<File> fileBuilder = Thumbnails.of(inputPath.toFile());
-            applyTransformations(fileBuilder);
-            fileBuilder.toOutputStream(outputStream);
+            Thumbnails.Builder<?> finalBuilder = Thumbnails.of(inputPath.toFile());
+
+            if (watermark != null) {
+                BufferedImage transformedImage = Thumbnails.of(inputPath.toFile())
+                        .scale(1.0)
+                        .asBufferedImage();
+                BufferedImage watermarkedImage = watermark.applyWatermark(transformedImage, copyright);
+
+                finalBuilder = Thumbnails.of(watermarkedImage);
+            }
+
+            applyTransformations(finalBuilder);
+
+            finalBuilder
+                    .outputFormat(extension)
+                    .toOutputStream(outputStream);
 
             return createTempFile(outputStream, extension);
         } catch (Exception e) {
@@ -78,13 +100,14 @@ public class ImageProcessor {
         }
     }
 
+
     private void validateInput(Path inputPath) {
         if (inputPath == null || !Files.exists(inputPath) || !Files.isRegularFile(inputPath)) {
             throw ExceptionUtil.make(ExceptionTemplate.FILE_PROCESS);
         }
     }
 
-    private void applyTransformations(Thumbnails.Builder<File> fileBuilder) {
+    private void applyTransformations(Thumbnails.Builder<?> fileBuilder) {
         if (scale != null) {
             fileBuilder.scale(scale);
         }

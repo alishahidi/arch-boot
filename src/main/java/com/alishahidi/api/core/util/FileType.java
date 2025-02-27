@@ -14,6 +14,7 @@ public enum FileType {
     VIDEO("video"),
     AUDIO("audio"),
     PDF("pdf"),
+    WORD("word"),
     DOCUMENT("text"),
     UNKNOWN("unknown");
 
@@ -33,6 +34,9 @@ public enum FileType {
             case "application", "text" -> {
                 if (mimeType.equals("application/pdf")) {
                     yield PDF;
+                } else if (mimeType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                        || mimeType.equals("application/msword")) {
+                    yield WORD;
                 }
                 yield DOCUMENT;
             }

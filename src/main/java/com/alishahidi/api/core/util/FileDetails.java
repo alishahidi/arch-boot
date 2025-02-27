@@ -3,8 +3,6 @@ package com.alishahidi.api.core.util;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @AllArgsConstructor

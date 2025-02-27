@@ -1,5 +1,7 @@
 package com.alishahidi.api.core.pdf;
 
+import com.alishahidi.api.core.exception.ExceptionTemplate;
+import com.alishahidi.api.core.exception.ExceptionUtil;
 import com.alishahidi.api.core.util.ExecutorUtils;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -24,10 +26,16 @@ public class Pdf {
     }
 
     Integer count = 0;
+    Integer select = null;
     PdfSelection selection = PdfSelection.ALL;
 
     public Pdf count(Integer count) {
         this.count = count;
+        return this;
+    }
+
+    public Pdf select(Integer select) {
+        this.select = select;
         return this;
     }
 
@@ -38,26 +46,29 @@ public class Pdf {
 
     private void reset() {
         count = 0;
+        select = null;
         selection = PdfSelection.ALL;
     }
 
     public CompletableFuture<List<Path>> toImage(Path path) {
         return CompletableFuture.supplyAsync(() -> {
-            List<Path> paths;
+            List<Path> paths = new ArrayList<>();
 
             try (PDDocument document = PDDocument.load(path.toFile())) {
                 PDFRenderer pdfRenderer = new PDFRenderer(document);
                 int totalPages = document.getNumberOfPages();
 
-                List<Integer> pageIndices = getPageIndices(totalPages);
+                if(select != null){
+                    Path selectPage = renderPage(pdfRenderer, select);
+                    paths.add(selectPage);
+                }else{
+                    List<Integer> pageIndices = getPageIndices(totalPages);
 
-                List<CompletableFuture<Path>> futures = pageIndices.stream()
-                        .map(page -> CompletableFuture.supplyAsync(() -> renderPage(pdfRenderer, page)))
-                        .toList();
+                    paths = pageIndices.stream()
+                            .map(page -> renderPage(pdfRenderer, page))
+                            .toList();
+                }
 
-                paths = futures.stream()
-                        .map(CompletableFuture::join)
-                        .toList();
             } catch (IOException e) {
                 throw new RuntimeException("Error processing PDF", e);
             }
@@ -89,7 +100,7 @@ public class Pdf {
             ImageIO.write(bim, "JPEG", tmpPath.toFile());
             return tmpPath;
         } catch (IOException e) {
-            throw new RuntimeException("Error rendering page", e);
+            throw ExceptionUtil.make(ExceptionTemplate.PDF_PAGE_ERROR_OR_NOT_FOUND);
         }
     }
 

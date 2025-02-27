@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -113,5 +114,30 @@ public class Bucket {
                         .build(),
                 AsyncResponseTransformer.toBytes()
         )).map(response -> new ByteArrayInputStream(response.asByteArray()));
+    }
+
+    public CompletableFuture<Path> getAsTempPath(Document document) {
+        return client.getObject(
+                GetObjectRequest.builder()
+                        .bucket(document.getScope().getBucket())
+                        .key(document.getPath()) // Use the document key to fetch from S3
+                        .build(),
+                AsyncResponseTransformer.toBytes()
+        ).thenApply(response -> {
+            try {
+                // Create a temporary file, using the document's key as part of the file name
+                Path tempFile = Files.createTempFile("s3-", "-" + document.getPath().replaceAll("/", "_"));
+
+                // Write the response content to the temporary file
+                Files.write(tempFile, response.asByteArray());
+
+                return tempFile; // Return the Path to the temporary file
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to write temporary file", e);
+            }
+        }).exceptionally(ex -> {
+            System.err.println("Failed to download: " + document.getPath() + ", reason: " + ex.getMessage());
+            return null;
+        });
     }
 }

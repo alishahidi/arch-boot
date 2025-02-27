@@ -17,6 +17,8 @@ public class S3ClientFactory {
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(config.getAccess(), config.getSecret())
                 ))
+                .forcePathStyle(true)
                 .build();
+
     }
 }

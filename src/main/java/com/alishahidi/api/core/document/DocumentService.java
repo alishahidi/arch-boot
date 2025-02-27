@@ -57,17 +57,39 @@ public class DocumentService {
 
     @Async
     public CompletableFuture<ApiResponse<DocumentDto>> upload(MultipartFile file, String scope) {
+        Path tmpPath = IOUtils.multipartFileToPath(file);
+
+        return CompletableFuture.completedFuture(ApiResponse.success(DocumentMapper.INSTANCE.toDto(save(tmpPath, scope, file.getOriginalFilename()))));
+    }
+
+    public Document save(Path path, String scope, String name) {
+        return save(path, scope, name, true);
+    }
+
+    public Document save(Path path, String scope, String name, Boolean processImage) {
+        String hash = null;
+        try {
+            hash = IOUtils.calculateHash(path);
+            Optional<Document> foundedDocument = documentRepository.findByHash(hash);
+            if (foundedDocument.isPresent()) {
+                Document document = foundedDocument.get();
+                if (document.getScope().getBucket().equals(scope)) {
+                    return document;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
         S3Scope s3Scope = S3Scope.fromScope(scope);
         if (s3Scope.equals(S3Scope.UNKNOWN)) {
             throw ExceptionUtil.make(ExceptionTemplate.S3_SCOPE_ERROR);
         }
 
-        Path tmpPath = IOUtils.multipartFileToPath(file);
-        FileDetails fileDetails = IOUtils.fileDetails(tmpPath);
-        if (fileDetails.getType().equals(FileType.IMAGE)) {
-            Path compressImage = ImageProcessor.create().process(tmpPath);
-            IOUtils.deleteFile(tmpPath);
-            tmpPath = compressImage;
+        FileDetails fileDetails = IOUtils.fileDetails(path);
+        if (processImage && fileDetails.getType().equals(FileType.IMAGE)) {
+            Path compressImage = ImageProcessor.create().process(path);
+            IOUtils.deleteFile(path);
+            path = compressImage;
         }
 
         Bucket bucket = Bucket.builder()
@@ -76,9 +98,9 @@ public class DocumentService {
                 .config(s3LiaraConfig)
                 .build();
 
-        String key = bucket.put(file.getOriginalFilename(), tmpPath, "upload").join();
+        String key = bucket.put(name, path, "upload").join();
 
-        IOUtils.deleteFile(tmpPath);
+        IOUtils.deleteFile(path);
 
         Document document = Document.builder()
                 .type(fileDetails.getType())
@@ -87,14 +109,15 @@ public class DocumentService {
                 .size(fileDetails.getSize())
                 .scope(s3Scope)
                 .path(key)
+                .name(name)
+                .hash(hash)
                 .build();
 
         Document savedDocument = documentRepository.save(document);
-        DocumentDto documentDto = DocumentMapper.INSTANCE.toDto(savedDocument);
 
         documentExpiredGarbageCollector.link(savedDocument);
 
-        return CompletableFuture.completedFuture(ApiResponse.success(documentDto));
+        return savedDocument;
     }
 
     @Async

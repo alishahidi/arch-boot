@@ -26,11 +26,15 @@ public class Document {
     Long id;
 
     String path;
+    String name;
 
     Long size;
+    @Enumerated(EnumType.STRING)
     FileType type;
     String mimeType;
     String extension;
+    String hash;
+    @Enumerated(EnumType.STRING)
     S3Scope scope;
 
     @CreationTimestamp

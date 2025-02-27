@@ -2,6 +2,7 @@ package com.alishahidi.api.core.generator;
 
 
 import com.alishahidi.api.core.generator.model.*;
+import com.alishahidi.api.core.util.StringUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -64,6 +65,15 @@ public class CodeGenerator {
         data.put("dtoType", "Create");
         generateFile("DtoTemplate.ftl", entityModel.getName(), "CreateDto.java", data, "dto");
         generateFile("MapperTemplate.ftl", entityModel.getName(), "Mapper.java", data);
+
+        if (!entityModel.getFields().isEmpty())
+            for (FieldModel fieldModel : entityModel.getFields()) {
+                if(!fieldModel.getEnums().isEmpty()){
+                    data.put("enumName", fieldModel.getName());
+                    data.put("enums", fieldModel.getEnums());
+                    generateFile("EnumTemplate.ftl", entityModel.getName(), StringUtils.toUpperCamelCase(fieldModel.getName())  + "Enum.java", data, "constant");
+                }
+            }
     }
 
     private void generateFile(String templateName, String entityName, String suffixName, Map<String, Object> data) throws IOException, TemplateException {
@@ -79,7 +89,7 @@ public class CodeGenerator {
 
         String entityDirectoryPath = srcMainJavaPath + packageDir + "/" + safeEntityName;
 
-        if(folder != null){
+        if (folder != null) {
             entityDirectoryPath = entityDirectoryPath + "/" + folder;
         }
 

@@ -39,6 +39,8 @@ import ${imp};
 public interface ${entityName}Mapper extends BaseMapper<${entityName}Entity, ${entityName}CreateDto, ${entityName}UpdateDto, ${entityName}LoadDto> {
 <#-- Mapping for List relations -->
 <#list relationships as rel>
+<#if rel.mappedBy?has_content>
+
     <#if rel.document>
         <#if documentIncluded == false>
     default DocumentDto DocumentToDocumentDto(Document document) {
@@ -51,5 +53,6 @@ public interface ${entityName}Mapper extends BaseMapper<${entityName}Entity, ${e
         return Mappers.getMapper(${rel.relatedEntityName}Mapper.class).load(${rel.relatedEntityName?uncap_first});
     }
     </#if>
+</#if>
 </#list>
 }

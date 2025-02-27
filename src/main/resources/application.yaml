@@ -1,14 +1,6 @@
 jwt:
   token: ${JWT_TOKEN:256-bit-token}
 
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
-
-
-
 spring:
   datasource:
 #    url: jdbc:sqlserver://localhost:1414;database=core;encrypt=true;trustServerCertificate=true
@@ -21,18 +13,32 @@ spring:
     url: jdbc:postgresql://${DB_HOST:host}:${DB_PORT:5432}/${DB_SCHEMA:schema}
     password: ${DB_PASS:pass}
 
-    hikari:
-      maximum-pool-size: 20
-      minimum-idle: 10
-      idle-timeout: 30000
-      max-lifetime: 1800000
-      connection-timeout: 20000
-      leak-detection-threshold: 2000
+  hikari:
+    maximum-pool-size: 20
+    minimum-idle: 5
+    idle-timeout: 30000
+    max-lifetime: 1800000
+    connection-timeout: 20000
+    leak-detection-threshold: 2000
+  messages:
+    basename: messages
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always  # Set to "never" if the schema is already initialized
+    #    overwrite-existing-jobs: true
+    properties:
+      org:
+        quartz:
+          jobStore:
+            #            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+    auto-startup: true
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      url: redis://:${REDIS_PASSWORD:test}@${REDIS_HOST:localhost}:${REDIS_PORT:6379}/0
+      timeout: 6000
 
   servlet:
     multipart:
@@ -49,16 +55,22 @@ spring:
   task:
     execution:
       pool:
-        core-size: 10
-        max-size: 50
+        core-size: 8
+        max-size: 16
         queue-capacity: 100
     scheduling:
       pool:
         size: 10
 
+logging:
+  level:
+    org.springframework.security: WARN
+    org.springframework.web: INFO
+    org.hibernate.SQL: ERROR
 server:
   error:
     include-message: always
+  port: ${APP_PORT:8080}
   compression:
     enabled: true
     min-response-size: 1024
@@ -69,7 +81,9 @@ s3:
     endpoint: https://example.com
     access: access
     secret: secret
-
+#    endpoint: http://localhost:9000
+#    access: minioadmin
+#    secret: minioadmin
 security:
   jwt:
     exp: 86400000
@@ -93,4 +107,17 @@ generator:
 garbage:
   collector:
     document:
-      time: 10000
+      time: 86400000
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000
+
+
+springdoc:
+  swagger-ui:
+    enabled: ${SWAGGER_UI_ENABLED:false}
+  api-docs:
+    path: /v3/api-docs
+
+

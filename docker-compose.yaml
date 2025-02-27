@@ -2,29 +2,29 @@ version: latest
 
 services:
   postgres:
-    container_name: postgres
+    container_name: api-postgres
     image: postgres:16-alpine
     restart: always
     environment:
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: schema
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: api
     volumes:
       - postgres:/var/lib/postgresql/data
 
   api:
-    container_name: api
+    container_name: api-api
     depends_on:
       - postgres
     build: ./
     ports:
       - 8080:8080
     environment:
-      - JWT_TOKEN=256-bit-token
-      - DB_HOST=host
+      - JWT_TOKEN=ac7b9c76236ae1e80f181586a980d292a1a6eb14e3beeaa97d01523ef2a571b1
+      - DB_HOST=api-db
       - DB_PORT=5432
-      - DB_USER=
-      - DB_PASS=pass
-      - DB_SCHEMA=schema
+      - DB_USER=postgres
+      - DB_PASS=test
+      - DB_SCHEMA=api
     volumes:
       - maven-repo:/root/.m2
 

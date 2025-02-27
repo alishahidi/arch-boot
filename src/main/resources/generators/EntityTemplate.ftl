@@ -8,9 +8,15 @@ import lombok.experimental.SuperBuilder;
 <#assign imports = []>
 <#assign entityImports = []>
 <#list fields as field>
-    <#if field.type.requiresImport()>
-        <#if !imports?seq_contains(field.type.importPath)>
-            <#assign imports += [field.type.importPath]>
+    <#if field.type.type == "Enum">
+        <#if !imports?seq_contains("${basePackage}.${entityName?lower_case}.constant.${entityName?cap_first}${field.name?cap_first}Enum")>
+            <#assign imports += ["${basePackage}.${entityName?lower_case}.constant.${entityName?cap_first}${field.name?cap_first}Enum"]>
+        </#if>
+    <#else>
+        <#if field.type.requiresImport()>
+            <#if !imports?seq_contains(field.type.importPath)>
+                <#assign imports += [field.type.importPath]>
+            </#if>
         </#if>
     </#if>
 </#list>
@@ -58,7 +64,12 @@ public class ${entityName}Entity extends BaseEntity {
     <#if field.required>
     @Column(nullable = false)
     </#if>
+    <#if field.type.type == "Enum">
+    @Enumerated(EnumType.STRING)
+    ${entityName?cap_first}${field.name?cap_first}Enum ${field.name};
+    <#else>
     ${field.type.type} ${field.name};
+    </#if>
 </#list>
 
 <#list relationships as rel>

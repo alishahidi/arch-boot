@@ -22,7 +22,7 @@ public enum S3Scope {
         }
 
         return switch (scope) {
-            case "contract-private" -> PRIVATE;
+            case "private-contract" -> PRIVATE;
             case "public" -> PUBLIC;
             default -> UNKNOWN;
         };

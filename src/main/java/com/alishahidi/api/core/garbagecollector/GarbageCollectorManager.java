@@ -1,10 +1,10 @@
 package com.alishahidi.api.core.garbagecollector;
 
-import com.alishahidi.api.core.context.SpringContext;
 import com.alishahidi.api.core.util.ExecutorUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +18,12 @@ public class GarbageCollectorManager {
     List<GarbageCollector> collectors;
     ScheduledExecutorService scheduler;
 
-    public GarbageCollectorManager() {
-        collectors = SpringContext.getBeans(GarbageCollector.class);
+    @Autowired
+    public GarbageCollectorManager(List<GarbageCollector> collectors_) {
+        collectors = collectors_;
         scheduler = ExecutorUtils.scheduledThreadPool(collectors.size());
     }
+
 
     @PostConstruct
     public void init() {

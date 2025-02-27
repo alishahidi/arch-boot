@@ -39,6 +39,7 @@
         <org.freemarker.version>2.3.33</org.freemarker.version>
         <jackson.version>2.18.0</jackson.version>
         <org.redisson.version>3.37.0</org.redisson.version>
+        <springdoc.openapi.version>2.8.4</springdoc.openapi.version>
     </properties>
     <dependencies>
         <dependency>
@@ -152,9 +153,13 @@
             <version>${org.redisson.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-            <version>10.2.1.jre8</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.openapi.version}</version>
         </dependency>
     </dependencies>
 
@@ -179,6 +184,7 @@
                 <configuration>
                     <source>21</source>
                     <target>21</target>
+                    <parameters>true</parameters>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.mapstruct</groupId>

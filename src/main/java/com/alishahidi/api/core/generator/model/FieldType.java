@@ -17,7 +17,8 @@ public enum FieldType {
     BIG_DECIMAL("BigDecimal", "java.math.BigDecimal"),
     DOUBLE("Double", null),
     LOCAL_DATE("LocalDate", "java.time.LocalDate"),
-    LOCAL_DATE_TIME("LocalDateTime", "java.time.LocalDateTime");
+    LOCAL_DATE_TIME("LocalDateTime", "java.time.LocalDateTime"),
+    ENUM("Enum", null);
 
     String type;
     String importPath;

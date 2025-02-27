@@ -1,7 +1,6 @@
 package com.alishahidi.api.core.garbagecollector.collector;
 
 import com.alishahidi.api.core.document.Document;
-import com.alishahidi.api.core.document.DocumentDto;
 import com.alishahidi.api.core.document.DocumentGarbageCollectorDto;
 import com.alishahidi.api.core.document.DocumentRepository;
 import com.alishahidi.api.core.garbagecollector.GarbageCollector;
@@ -13,11 +12,9 @@ import lombok.Setter;
 import org.redisson.api.RMap;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Getter

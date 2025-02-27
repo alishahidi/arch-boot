@@ -21,22 +21,22 @@ public class ${entityName}Controller {
 
     @PostMapping
     public ResponseEntity<ApiResponse<${entityName}LoadDto>> create(@RequestBody ${entityName}CreateDto createDto) {
-        return ResponseEntity.ok(${entityName?uncap_first}Service.create(createDto));
+        return ResponseEntity.ok(ApiResponse.success(${entityName?uncap_first}Service.create(createDto)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<${entityName}LoadDto>> update(@PathVariable Long id, @RequestBody ${entityName}UpdateDto updateDto) {
-        return ResponseEntity.ok(${entityName?uncap_first}Service.update(id, updateDto));
+        return ResponseEntity.ok(ApiResponse.success(${entityName?uncap_first}Service.update(id, updateDto)));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<${entityName}LoadDto>> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(${entityName?uncap_first}Service.findById(id));
+        return ResponseEntity.ok(ApiResponse.success(${entityName?uncap_first}Service.findById(id)));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<${entityName}LoadDto>>> findAll() {
-        return ResponseEntity.ok(${entityName?uncap_first}Service.findAll());
+        return ResponseEntity.ok(ApiResponse.success(${entityName?uncap_first}Service.findAll()));
     }
 
     @DeleteMapping("/{id}")

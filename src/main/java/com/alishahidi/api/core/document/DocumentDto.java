@@ -22,6 +22,7 @@ public class DocumentDto {
     FileType type;
     String mimeType;
     String extension;
+    String hash;
     S3Scope scope;
 
     Date createdAt;

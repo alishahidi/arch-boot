@@ -6,9 +6,15 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 <#assign imports = []>
 <#list fields as field>
-    <#if field.type.requiresImport()>
-        <#if !imports?seq_contains(field.type.importPath)>
-            <#assign imports += [field.type.importPath]>
+    <#if field.type.type == "Enum">
+        <#if !imports?seq_contains("${basePackage}.${entityName?lower_case}.constant.${entityName?cap_first}${field.name?cap_first}Enum")>
+            <#assign imports += ["${basePackage}.${entityName?lower_case}.constant.${entityName?cap_first}${field.name?cap_first}Enum"]>
+        </#if>
+    <#else>
+        <#if field.type.requiresImport()>
+            <#if !imports?seq_contains(field.type.importPath)>
+                <#assign imports += [field.type.importPath]>
+            </#if>
         </#if>
     </#if>
 </#list>
@@ -38,9 +44,14 @@ import ${imp};
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ${entityName}${dtoType}Dto extends BaseDto {
 <#list fields as field>
+    <#if field.type.type == "Enum">
+    ${entityName?cap_first}${field.name?cap_first}Enum ${field.name};
+    <#else>
     ${field.type.type} ${field.name};
+    </#if>
 </#list>
 <#list relationships as rel>
+<#if rel.mappedBy?has_content>
     <#if rel.type.type == "OneToOne" || rel.type.type == "ManyToOne">
         <#if rel.document>
     DocumentDto ${rel.name?uncap_first};
@@ -55,5 +66,6 @@ public class ${entityName}${dtoType}Dto extends BaseDto {
     List<${rel.relatedEntityName}LoadDto> ${rel.relatedEntityName?uncap_first};
         </#if>
     </#if>
+</#if>
 </#list>
 }

@@ -1,13 +1,13 @@
 package com.alishahidi.api.core.security.annotation;
 
-import org.aspectj.lang.annotation.Aspect;
-import org.springframework.stereotype.Component;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.HashSet;

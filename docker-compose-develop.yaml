@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.4.1-alpine
+    container_name: api-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: "test"
+    command: redis-server --requirepass test
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: aoi-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: contract
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio
+    container_name: api-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin  # Replace with your preferred access key
+      MINIO_ROOT_PASSWORD: minioadmin  # Replace with your preferred secret key
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"  # MinIO S3 API port
+      - "9001:9001"  # MinIO console port
+    volumes:
+      - miniodata:/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+    driver: local
+  redisdata:
+    driver: local
+  miniodata:
+    driver: local
