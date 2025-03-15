@@ -5,24 +5,44 @@ import lombok.experimental.UtilityClass;
 import org.quartz.JobDataMap;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 @UtilityClass
 public class QuartzUtils {
 
     public void setDefaultServerFields(JobDataMap jobDataMap) {
-        jobDataMap.put("ip",  getServerIp());
-        jobDataMap.put("serverIp", getClientIp());
+        jobDataMap.put("ip", getClientIp());
+        jobDataMap.put("serverIp", getServerIp());
         jobDataMap.put("username", getUsername());
     }
 
-    private String getServerIp() {
+    private static String getServerIp() {
         try {
-            return InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            return "0.0.0.0";
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+
+                if (iface.isLoopback() || iface.isVirtual() || !iface.isUp())
+                    continue;
+
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+                    if (addr instanceof Inet4Address) {
+                        String ip = addr.getHostAddress();
+                        if (!ip.startsWith("127.") && !ip.startsWith("169.254.")) {
+                            return ip;
+                        }
+                    }
+                }
+            }
+        } catch (SocketException ignored) {
         }
+        return "127.0.0.1";
     }
 
     private String getClientIp() {

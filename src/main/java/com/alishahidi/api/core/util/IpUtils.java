@@ -20,7 +20,12 @@ public class IpUtils {
     );
 
     public String getClientIp() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            return "0.0.0.0";
+        }
+
+        HttpServletRequest request = attributes.getRequest();
 
         for (String header : HEADERS_TO_TRY) {
             String ip = request.getHeader(header);
@@ -28,6 +33,8 @@ public class IpUtils {
                 return ip.contains(",") ? ip.split(",")[0].trim() : ip;
             }
         }
-        return request.getRemoteAddr();
+
+        String ip = request.getRemoteAddr();
+        return (ip == null || ip.isEmpty() || "0.0.0.0".equals(ip)) ? "127.0.0.1" : ip;
     }
 }

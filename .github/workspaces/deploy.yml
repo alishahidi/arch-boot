@@ -1,0 +1,142 @@
+name: 🚀 Deploy the Mighty Contract API 🚀
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🎉 Checkout the glorious code
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up JDK 21 (Because Java is life)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: 🔨 Build with Maven (Skip the boring tests)
+        run: mvn clean install -DskipTests
+
+      - name: 🔍 Find the sacred JAR file
+        id: find-jar
+        run: |
+          JAR_FILE=$(find ./target -name "*.jar" | head -n 1)
+          echo "JAR_FILE_PATH=$JAR_FILE" >> $GITHUB_ENV
+          echo "🔍 Found JAR file: $JAR_FILE"
+
+      - name: 🛠 Install missing warriors (rsync and sshpass)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync sshpass
+
+      - name: 🛡 Fetch server host key (because security matters)
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+          echo "🔑 Trust established with ${{ secrets.SERVER_IP }}"
+
+      - name: 🚀 Deploy using rsync (Speedrun edition)
+        run: |
+          echo "🔥 Deploying contract-api.jar to the battlefield..."
+          sshpass -p "${{ secrets.SSH_PASSWORD }}" rsync -avz --compress-level=9 --omit-dir-times \
+            -e "ssh -p ${{ secrets.SSH_PORT }}" \
+            ${{ env.JAR_FILE_PATH }} \
+            ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/root/build/contract-api.jar
+          echo "✅ Deployment complete! The JAR has landed!"
+
+      - name: 🧐 Verify JAR on server (Because trust issues)
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            echo "🕵️ Checking if the JAR survived the journey..."
+            echo "JAR file size on server: $(du -h /root/build/contract-api.jar)"
+            echo "JAR file contents preview:"
+            jar tf /root/build/contract-api.jar | head -n 10
+            echo "✅ JAR looks good!"
+
+      - name: 🔓 Set file permissions (Because Linux likes control)
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            echo "🔧 Adjusting permissions for contract-api.jar"
+            sudo chmod 644 /root/build/contract-api.jar
+            sudo chown root:root /root/build/contract-api.jar
+            echo "✅ Permissions updated!"
+
+      - name: 🔄 Restart Contract API (Brace yourself...)
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            echo "💀 Killing the old process..."
+            sudo systemctl daemon-reload
+            sudo systemctl restart contract-api
+            echo "🚀 The new contract-api is rising from the ashes!"
+            sudo systemctl status contract-api --no-pager
+            echo "🎉 API is ALIVE! Time to celebrate! 🎉"
+
+      - name: 🖼️ Pre-deployment Meme Motivation (Optional but fun)
+        run: |
+          echo "🔴 STOP! Before we continue, take a deep breath."
+          echo "Here's some motivation for you: https://i.imgur.com/ZF7YhIj.jpg"
+          echo "Now, let's ship it! 🚀"
+
+      - name: 🥳 Send Slack Notification on Success
+        if: success()
+        uses: rtCamp/action-slack-notify@v2.3.2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: "#deployments"
+          SLACK_USERNAME: "GitHub Actions"
+          SLACK_MESSAGE: |
+            🎉 *Contract API Deployment: SUCCESS!* 🚀
+            ✅ *Everything went smoothly! Time to grab a coffee! ☕*
+            *Repository:* ${{ github.repository }}
+            *Branch:* ${{ github.ref_name }}
+            *Commit:* `${{ github.sha }}`
+            *Deployed by:* ${{ github.actor }}
+            *Server:* `${{ secrets.SERVER_IP }}`
+            🕺 *Now do a little dance to celebrate!*
+            https://giphy.com/gifs/party-dance-dancing-xT9Igo6YzPZSdTqdVu
+          SLACK_COLOR: "good"
+
+      - name: 🤬 Send Slack Notification on Failure
+        if: failure()
+        uses: rtCamp/action-slack-notify@v2.3.2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: "#deployments"
+          SLACK_USERNAME: "GitHub Actions"
+          SLACK_MESSAGE: |
+            😡 *Deployment Failed!* 🚨
+            ❌ Something went horribly wrong!
+            *Repository:* ${{ github.repository }}
+            *Branch:* ${{ github.ref_name }}
+            *Commit:* `${{ github.sha }}`
+            *Blame:* ${{ github.actor }} (jk... or maybe not 🤔)
+            *Server:* `${{ secrets.SERVER_IP }}`
+            🚑 *Check logs in GitHub Actions!*
+            https://giphy.com/gifs/disaster-explosion-fire-3o7TKU8RvQuomFfUUU
+          SLACK_COLOR: "danger"
+
+      - name: 💃 Celebrate (Only if successful)
+        if: success()
+        run: |
+          echo "🎊🎉 Deployment was a success! Time for a victory dance! 🕺💃"
+          echo "https://giphy.com/gifs/party-dance-dancing-xT9Igo6YzPZSdTqdVu"
